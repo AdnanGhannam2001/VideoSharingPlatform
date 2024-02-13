@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B51FA9C2-EA7A-41B3-B37F-5DB5633FEAAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoSharingPlatform.Application", "src\VideoSharingPlatform.Application\VideoSharingPlatform.Application.csproj", "{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoSharingPlatform.Web", "src\VideoSharingPlatform.Web\VideoSharingPlatform.Web.csproj", "{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoSharingPlatform.Core", "src\VideoSharingPlatform.Core\VideoSharingPlatform.Core.csproj", "{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoSharingPlatform.Persistent", "src\VideoSharingPlatform.Persistent\VideoSharingPlatform.Persistent.csproj", "{2C014896-92BD-4756-A7E7-1A7973F31898}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C014896-92BD-4756-A7E7-1A7973F31898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C014896-92BD-4756-A7E7-1A7973F31898}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C014896-92BD-4756-A7E7-1A7973F31898}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C014896-92BD-4756-A7E7-1A7973F31898}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B4924BBD-58FB-4FD3-8A50-CB44F0CF77E1} = {B51FA9C2-EA7A-41B3-B37F-5DB5633FEAAD}
+		{A51B4DE2-DB6B-42A2-A6B8-86F0C0DA2A2B} = {B51FA9C2-EA7A-41B3-B37F-5DB5633FEAAD}
+		{FF7B0F9F-B0C6-4EA6-B291-403F9D6B7CEA} = {B51FA9C2-EA7A-41B3-B37F-5DB5633FEAAD}
+		{2C014896-92BD-4756-A7E7-1A7973F31898} = {B51FA9C2-EA7A-41B3-B37F-5DB5633FEAAD}
+	EndGlobalSection
+EndGlobal

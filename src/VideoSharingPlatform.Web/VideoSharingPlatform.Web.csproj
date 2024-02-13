@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReferenceProjectReference Include="..\VideoSharingPlatform.Core\VideoSharingPlatform.Core.csproj" />
+    <ProjectReference Include="..\VideoSharingPlatform.Application\VideoSharingPlatform.Application.csproj" />
+    <ProjectReference Include="..\VideoSharingPlatform.Persistent\VideoSharingPlatform.Persistent.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
