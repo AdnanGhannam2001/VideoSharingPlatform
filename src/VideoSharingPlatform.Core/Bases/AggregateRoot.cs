@@ -1,3 +1,4 @@
+using NanoidDotNet;
 using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Core.Bases;
@@ -17,5 +18,5 @@ public class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot
 }
 
 public class AggregateRoot : AggregateRoot<string> {
-    public AggregateRoot() : base(Guid.NewGuid().ToString()) { }
+    public AggregateRoot() : base(Nanoid.Generate()) { }
 }

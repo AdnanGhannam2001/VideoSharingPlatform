@@ -1,3 +1,4 @@
+using NanoidDotNet;
 using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Core.Bases;
@@ -37,5 +38,5 @@ public class Entity<TKey> : IEntity<TKey>, IEquatable<Entity<TKey>>
 }
 
 public class Entity : Entity<string> {
-    public Entity() : base(Guid.NewGuid().ToString()) { }
+    public Entity() : base(Nanoid.Generate()) { }
 }
