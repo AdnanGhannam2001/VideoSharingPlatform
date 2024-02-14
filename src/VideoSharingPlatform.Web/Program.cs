@@ -1,6 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using VideoSharingPlatform.Persistent.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<ApplicationDbContext>(opt => {
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection"));
+});
 
 var app = builder.Build();
 
