@@ -24,15 +24,5 @@ public sealed class VideoConfiguration : IEntityTypeConfiguration<Video> {
 
         builder.Property(x => x.Hidden)
             .HasDefaultValue(false);
-
-        builder.HasMany(x => x.Reactions)
-            .WithOne(x => x.Video)
-            .HasForeignKey(x => x.VideoId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Comments)
-            .WithOne(x => x.Video)
-            .HasForeignKey(x => x.VideoId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

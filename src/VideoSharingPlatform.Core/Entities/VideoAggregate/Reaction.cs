@@ -16,10 +16,21 @@ public sealed class Reaction {
         Type = type;
     }
 
+    public Reaction(Comment comment, AppUser user, ReactionType type) {
+        Comment = comment;
+        CommentId = comment.Id;
+        User = user;
+        UserId = user.Id;
+        Type = type;
+    }
+
     public ReactionType Type { get; private set; }
 
-    public string VideoId { get; init; }
-    public Video Video { get; init; }
+    public string? VideoId { get; init; }
+    public Video? Video { get; init; }
+
+    public string? CommentId { get; init; }
+    public Comment? Comment { get; init; }
 
     public string UserId { get; init; }
     public AppUser User { get; init; }
