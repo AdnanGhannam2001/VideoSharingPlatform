@@ -2,7 +2,9 @@ using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Core.Bases;
 
-public class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot {
+public class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot
+    where TKey : IComparable
+{
     private List<IDomainEvent> _domainEvents = [];
 
     public AggregateRoot(TKey id) : base(id) { }
