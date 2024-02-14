@@ -10,7 +10,7 @@ public class Entity<TKey> : IEntity<TKey> {
 
     public TKey Id { get; init; }
 
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTime CreatedAtUtc { get; init; }
 }
 
 public class Entity : Entity<string> {
