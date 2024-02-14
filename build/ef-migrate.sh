@@ -1,0 +1,2 @@
+dotnet ef migrations add --project ./src/VideoSharingPlatform.Persistent/ --startup-project ./src/VideoSharingPlatform.Web/ $1
+dotnet ef database update --project ./src/VideoSharingPlatform.Persistent/ --startup-project ./src/VideoSharingPlatform.Web/
