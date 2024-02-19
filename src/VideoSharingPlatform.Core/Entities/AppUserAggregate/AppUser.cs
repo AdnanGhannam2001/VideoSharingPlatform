@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using NanoidDotNet;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 using VideoSharingPlatform.Core.Interfaces;
 
@@ -13,8 +14,14 @@ public sealed class AppUser : IdentityUser<string>, IAggregateRoot, IEntity {
     private List<Subscription> _subscribers = [];
     private List<Subscription> _subscribedTo = [];
 
-    public AppUser() {
-        Id = Guid.NewGuid().ToString();
+    #pragma warning disable CS8618
+    private AppUser() { }
+    #pragma warning restore CS8618
+
+    public AppUser(string username, string email) : base() {
+        Id = Nanoid.Generate();
+        UserName = username;
+        Email = email;
         CreatedAtUtc = DateTime.UtcNow;
     }
 
