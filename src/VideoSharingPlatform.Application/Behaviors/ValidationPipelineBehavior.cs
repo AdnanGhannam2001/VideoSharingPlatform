@@ -7,7 +7,6 @@ namespace VideoSharingPlatform.Application.Behaviors;
 
 public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
-    where TResponse : class
 {
     private readonly IValidator<TRequest> _validator;
     public ValidationPipelineBehavior(IValidator<TRequest> validator) => _validator = validator;
