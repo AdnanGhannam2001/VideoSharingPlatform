@@ -22,7 +22,7 @@ public class Result<V, E> : IEquatable<Result<V, E>> {
 
     public override int GetHashCode() => GetHashCode();
 
-    public bool IsSuccess => Error is null;
+    public bool IsSuccess => Value is not null && Error is null;
 
     public override string ToString()
     {

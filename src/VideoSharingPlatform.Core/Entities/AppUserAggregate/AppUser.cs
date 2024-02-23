@@ -5,7 +5,7 @@ using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Core.Entities.AppUserAggregate;
 
-public sealed class AppUser : IdentityUser<string>, IAggregateRoot, IEntity {
+public sealed class AppUser : IdentityUser<string>, IAggregateRoot {
     private List<IDomainEvent> _domainEvents = [];
     private List<Notification> _notifications = [];
     private List<Video> _videos = [];
@@ -14,9 +14,7 @@ public sealed class AppUser : IdentityUser<string>, IAggregateRoot, IEntity {
     private List<Subscription> _subscribers = [];
     private List<Subscription> _subscribedTo = [];
 
-    #pragma warning disable CS8618
     private AppUser() { }
-    #pragma warning restore CS8618
 
     public AppUser(string username, string email) : base() {
         Id = Nanoid.Generate();
@@ -26,8 +24,6 @@ public sealed class AppUser : IdentityUser<string>, IAggregateRoot, IEntity {
     }
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    public new string Id { get; init; }
 
     public DateTime CreatedAtUtc { get; init; }
 
