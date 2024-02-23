@@ -1,6 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using VideoSharingPlatform.Application.Features.Commands.CreateUser;
+using VideoSharingPlatform.Core.Entities.AppUserAggregate;
 using VideoSharingPlatform.Web.Dtos;
 
 namespace VideoSharingPlatform.Web.Controllers;
@@ -30,6 +31,32 @@ public class UsersController : Controller {
             ModelState.AddModelErrors(result.Error!);
             return View(dto);
         }
+
+        return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+    [HttpGet("login")]
+    public IActionResult Login() {
+        return View();
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(
+        [Bind("UserName", "Password")] LoginRequest dto,
+        [FromServices] SignInManager<AppUser> signInManager)
+    {
+        if (!ModelState.IsValid) {
+            return View(dto);
+        }
+
+        var result = await _mediator.Send(dto.ToValidateUserPasswordCommand());
+
+        if (!result.IsSuccess) {
+            ModelState.AddModelErrors(result.Error!);
+            return View(dto);
+        }
+
+        await signInManager.SignInAsync(result.Value!, true);
 
         return RedirectToAction(nameof(HomeController.Index), "Home");
     }
