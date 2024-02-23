@@ -9,8 +9,8 @@ public static class EntityFrameworkCoreExtensions {
         var messageText = exception.InnerException?.Data["MessageText"];
 
         return messageText switch {
-            string m => new("", "DbUpdateError", m),
-            _ => new("", "DbUpdateError", "Unknown Error")
+            string m => new("DbUpdateError", m),
+            _ => new("DbUpdateError", "Unknown Error")
         };
     }
 }

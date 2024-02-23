@@ -17,13 +17,13 @@ public class ValidateUserPasswordHandler : IRequestHandler<ValidateUserPasswordC
         var user = await _userManager.FindByNameAsync(request.UserName);
 
         if (user is null) {
-            return new([new("404", nameof(request.UserName), "User is not found")]);
+            return new([new(nameof(request.UserName), "User is not found")]);
         }
 
         var result = await _userManager.CheckPasswordAsync(user, request.Password);
 
         return result
             ? new(user)
-            : new([new("400", nameof(request.Password), "Password is wrong")]);
+            : new([new(nameof(request.Password), "Password is wrong")]);
     }
 }

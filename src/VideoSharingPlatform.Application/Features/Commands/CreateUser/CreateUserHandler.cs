@@ -27,7 +27,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, Result<AppUs
             return result.Succeeded
                 ? new(user)
                 : new(result.Errors.Select(error =>
-                    new Error(error.Code, "DbUpdateError", error.Description)));
+                    new Error("DbUpdateError", error.Description, error.Code)));
         }
         catch (DbUpdateException exception) {
             return new([exception.AsError()]);

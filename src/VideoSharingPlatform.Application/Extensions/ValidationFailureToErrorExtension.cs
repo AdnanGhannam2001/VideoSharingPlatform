@@ -5,10 +5,9 @@ using VideoSharingPlatform.Core.Common;
 namespace VideoSharingPlatform.Application.Extensions;
 
 public static class ValidationFailureToErrorExtension {
-    public static Error MapToError(this ValidationFailure validationFailure) {
-        return new(
-            validationFailure.ErrorCode,
+    public static Error MapToError(this ValidationFailure validationFailure)
+        => new(
             validationFailure.PropertyName,
-            validationFailure.ErrorMessage);
-    }
+            validationFailure.ErrorMessage,
+            validationFailure.ErrorCode);
 }
