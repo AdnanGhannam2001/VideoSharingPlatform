@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +59,13 @@ public class UsersController : Controller {
         }
 
         await signInManager.SignInAsync(result.Value!, true);
+
+        return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromServices] SignInManager<AppUser> signInManager) {
+        await signInManager.SignOutAsync();
 
         return RedirectToAction(nameof(HomeController.Index), "Home");
     }
