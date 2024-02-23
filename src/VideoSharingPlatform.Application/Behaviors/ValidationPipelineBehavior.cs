@@ -8,14 +8,23 @@ namespace VideoSharingPlatform.Application.Behaviors;
 public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly IValidator<TRequest> _validator;
-    public ValidationPipelineBehavior(IValidator<TRequest> validator) => _validator = validator;
+    private readonly IEnumerable<IValidator<TRequest>> _validators;
+    public ValidationPipelineBehavior(IEnumerable<IValidator<TRequest>> validators) => _validators = validators;
 
     public async Task<TResponse> Handle(TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        var result = await _validator.ValidateAsync(request, cancellationToken);
+        if (!_validators.Any()) {
+            return await next();
+        }
+
+        var result = _validators
+            .Select(validator => validator.ValidateAsync(request, cancellationToken).GetAwaiter().GetResult())
+            .Aggregate((total, next) => {
+                total.Errors.AddRange(next.Errors);
+                return total;
+            });
 
         if (!result.IsValid) {
             var successType = typeof(TResponse).GetGenericArguments()[0];
