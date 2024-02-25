@@ -1,8 +1,14 @@
 using System.Security.Claims;
 
 using MediatR;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+
+using VideoSharingPlatform.Application.Features.Commands.UpdateUser;
+
+using VideoSharingPlatform.Application.Features.Queries.GetUser;
 using VideoSharingPlatform.Core.Entities.AppUserAggregate;
 using VideoSharingPlatform.Web.Dtos;
 
@@ -68,5 +74,32 @@ public class UsersController : Controller {
         await signInManager.SignOutAsync();
 
         return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+    [HttpGet("profile")]
+    [Authorize]
+    public async Task<IActionResult> Profile([FromQuery] bool updated = false) {
+        var result = await _mediator.Send(
+                new GetUserQuery(
+                    HttpContext.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value));
+
+        ViewData["updated"] = updated;
+
+        return result.IsSuccess
+            ? View(result.Value)
+            : NotFound();
+    }
+
+    [HttpPost("update")]
+    [Authorize]
+    public async Task<IActionResult> Update([Bind] UserDto dto) {
+        var result = await _mediator.Send(
+                new UpdateUserCommand(
+                    HttpContext.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value,
+                    dto.UserName,
+                    dto.Email,
+                    dto.PhoneNumber));
+
+        return RedirectToAction(nameof(Profile), new { updated = true });
     }
 }
