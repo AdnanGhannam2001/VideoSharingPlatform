@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
-
 using VideoSharingPlatform.Application.Features.Commands.CreateUser;
 
 namespace VideoSharingPlatform.Web.Dtos;
