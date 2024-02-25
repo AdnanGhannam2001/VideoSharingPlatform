@@ -8,6 +8,7 @@ using MediatR;
 using VideoSharingPlatform.Application.Behaviors;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using VideoSharingPlatform.Core.Interfaces;
+using VideoSharingPlatform.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
+builder.Services.AddScoped(typeof(IUploadService<IFormFile>), typeof(UploadService));
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
