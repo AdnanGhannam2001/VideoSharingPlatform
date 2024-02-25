@@ -11,14 +11,14 @@ public sealed class Video : AggregateRoot {
     private Video() { }
     #pragma warning restore CS8618
 
-    public Video(AppUser user, string title, string description, string uri, string thumbnail, bool hidden = false) : base() {
+    public Video(AppUser user, string title, string description, bool hidden = false) : base() {
         User = user;
         UserId = user.Id;
         Title = title;
         Description = description;
         UpdatedAtUtc = CreatedAtUtc;
-        Uri = uri;
-        Thumbnail = thumbnail;
+        Uri = Id;
+        Thumbnail = Id;
         Hidden = hidden;
     }
 
