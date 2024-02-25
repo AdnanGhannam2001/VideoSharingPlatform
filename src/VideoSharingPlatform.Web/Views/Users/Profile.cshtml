@@ -22,7 +22,7 @@
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Update</button>
     </div>
-    @if((bool)ViewData["updated"] == true) {
+    @if((bool?)ViewData["updated"] == true) {
         <span class="text-success">*Profile Updated</span>
     }
 </form>
