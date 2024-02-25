@@ -7,6 +7,7 @@ using FluentValidation;
 using MediatR;
 using VideoSharingPlatform.Application.Behaviors;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using VideoSharingPlatform.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+
+builder.Services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
