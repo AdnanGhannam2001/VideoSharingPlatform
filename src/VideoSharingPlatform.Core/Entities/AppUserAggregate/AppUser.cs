@@ -37,4 +37,10 @@ public sealed class AppUser : IdentityUser<string>, IAggregateRoot {
     public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
     public IReadOnlyCollection<Subscription> Subscribers => _subscribers.AsReadOnly();
     public IReadOnlyCollection<Subscription> SubscribedTo => _subscribedTo.AsReadOnly();
+
+    public void Update(string userName, string email, string phoneNumber) {
+        UserName = userName;
+        Email = email;
+        PhoneNumber = phoneNumber;
+    }
 }
