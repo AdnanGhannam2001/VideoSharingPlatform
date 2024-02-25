@@ -23,7 +23,7 @@ public class CreateVideoHandler : IRequestHandler<CreateVideoCommand, Result<Vid
             return new(user.Error!);
         }
 
-        var video = new Video(user.Value!, request.Title, request.Description, request.Uri, request.Thumbnail);
+        var video = new Video(user.Value!, request.Title, request.Description);
 
         await _repo.AddAsync(video, cancellationToken);
 

@@ -11,11 +11,5 @@ public class CreateVideoValidator : AbstractValidator<CreateVideoCommand> {
         RuleFor(x => x.Description)
             .MaximumLength(1000)
             .NotEmpty();
-
-        RuleFor(x => x.Uri)
-            .NotEmpty();
-
-        RuleFor(x => x.Thumbnail)
-            .NotEmpty();
     }
 }
