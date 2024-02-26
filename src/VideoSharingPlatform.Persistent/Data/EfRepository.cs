@@ -12,35 +12,52 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
 
     public EfRepository(ApplicationDbContext context) => _context = context;
 
+    protected IQueryable<T> GetQueryable() => _context.Set<T>();
+
     public virtual Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
         where TKey : notnull, IComparable => _context.Set<T>().FindAsync(id, cancellationToken).AsTask();
 
     public virtual Task<List<T>> ListAsync(CancellationToken cancellationToken = default) =>
-        _context.Set<T>().ToListAsync(cancellationToken);
+        _context.Set<T>().ToListAsync();
 
     public virtual Task<List<T>> GetPageAsync<TKey>(int pageNumber,
         int pageSize,
-        Func<T, TKey> keySelector,
-        CancellationToken cancellationToken = default
-    ) =>
-        _context.Set<T>()
-            .OrderBy(keySelector)
-            .AsQueryable()
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
+        Func<T, TKey>? keySelector = null,
+        bool desc = false,
+        CancellationToken cancellationToken = default)
+    {
+        List<T> result = keySelector switch {
+            not null => desc
+                ? _context.Set<T>()
+                    .OrderByDescending(keySelector)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList()
+                : _context.Set<T>()
+                    .OrderBy(keySelector)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList(),
+            _ => _context.Set<T>()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList()
+        };
+
+        return Task.FromResult(result);
+    } 
 
     public virtual Task<int> CountAsync(CancellationToken cancellationToken = default) => 
-        _context.Set<T>().CountAsync(cancellationToken);
+        _context.Set<T>().AsNoTracking().CountAsync(cancellationToken);
 
     public virtual Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) =>
-        _context.Set<T>().CountAsync(predicate, cancellationToken);
+        _context.Set<T>().AsNoTracking().CountAsync(predicate, cancellationToken);
 
     public virtual Task<bool> AnyAsync(CancellationToken cancellationToken = default) =>
-        _context.Set<T>().AnyAsync(cancellationToken);
+        _context.Set<T>().AsNoTracking().AnyAsync(cancellationToken);
 
     public virtual Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) =>
-        _context.Set<T>().AnyAsync(predicate, cancellationToken);
+        _context.Set<T>().AsNoTracking().AnyAsync(predicate, cancellationToken);
 
     public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default) {
         _context.Set<T>().Add(entity);

@@ -9,7 +9,11 @@ public interface IReadRepository<T>
 
     Task<List<T>> ListAsync(CancellationToken cancellationToken = default);
 
-    Task<List<T>> GetPageAsync<TKey>(int pageNumber, int pageSize, Func<T, TKey> keySelector, CancellationToken cancellationToken = default);
+    Task<List<T>> GetPageAsync<TKey>(int pageNumber,
+        int pageSize,
+        Func<T, TKey>? keySelector = null,
+        bool desc = false,
+        CancellationToken cancellationToken = default);
 
     Task<int> CountAsync(CancellationToken cancellationToken = default);
     Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
