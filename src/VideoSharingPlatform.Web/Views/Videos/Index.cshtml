@@ -6,7 +6,7 @@
 <h1>Videos</h1>
 @foreach (var video in Model.Videos) {
     <div class="card mb-3">
-        <img src="@("/thumbnails/" + video.Thumbnail + ".png")" class="card-img-top" alt="Video Thumbnail">
+        <img src="@("/thumbnails/" + video.Id + video.ThumbnailExt)" class="card-img-top" alt="Video Thumbnail">
         <div class="card-body">
             <a asp-action="watch" asp-route-id="@video.Id">
                 <h5 class="card-title">@video.Title</h5>

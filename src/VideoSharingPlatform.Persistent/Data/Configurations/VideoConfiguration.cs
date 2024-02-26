@@ -16,10 +16,10 @@ public sealed class VideoConfiguration : IEntityTypeConfiguration<Video> {
             .HasMaxLength(1000)
             .IsRequired();
 
-        builder.Property(x => x.Uri)
+        builder.Property(x => x.VideoExt)
             .IsRequired();
 
-        builder.Property(x => x.Thumbnail)
+        builder.Property(x => x.ThumbnailExt)
             .IsRequired();
 
         builder.Property(x => x.Hidden)

@@ -50,7 +50,9 @@ public class VideosController : Controller {
         var result = await _mediator.Send(new CreateVideoCommand(
             HttpContext.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value,
             dto.Title,
-            dto.Description));
+            dto.Description,
+            Path.GetExtension(dto.VideoFile.FileName),
+            Path.GetExtension(dto.Thumbnail.FileName)));
 
         if (!result.IsSuccess) {
             return View(dto);
