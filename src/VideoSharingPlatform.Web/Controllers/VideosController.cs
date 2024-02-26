@@ -1,14 +1,12 @@
 using System.Security.Claims;
-
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
+using VideoSharingPlatform.Application.Features.Queries.GetVideos;
+using VideoSharingPlatform.Application.Features.Queries.GetVideosCount;
 using VideoSharingPlatform.Core.Interfaces;
-
 using VideoSharingPlatform.Web.Dtos;
-using VideoSharingPlatform.Web.Services;
 
 namespace VideoSharingPlatform.Web.Controllers;
 
@@ -21,6 +19,19 @@ public class VideosController : Controller {
     {
         _mediator = mediator;
         _uploadService = uploadService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
+        var videos = await _mediator.Send(new GetVideosQuery(pageNumber, pageSize));
+        var count = await _mediator.Send(new GetVideosCountQuery());
+
+        return View(new VideosResponse(videos.Value!, pageNumber, pageSize, count.Value));
+    }
+
+    [HttpGet("watch/{id}")]
+    public IActionResult Watch(string id) {
+        return View();
     }
 
     [HttpGet("create")]

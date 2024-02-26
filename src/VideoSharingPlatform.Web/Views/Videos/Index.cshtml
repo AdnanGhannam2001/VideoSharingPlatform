@@ -1,0 +1,46 @@
+@using VideoSharingPlatform.Web.Dtos
+@model VideosResponse
+
+@{ var totalPages = (int)Math.Ceiling(Model.Count / (double)Model.PageSize); }
+
+<h1>Videos</h1>
+@foreach (var video in Model.Videos) {
+    <div class="card mb-3">
+        <img src="@("/thumbnails/" + video.Thumbnail + ".png")" class="card-img-top" alt="Video Thumbnail">
+        <div class="card-body">
+            <a asp-action="watch" asp-route-id="@video.Id">
+                <h5 class="card-title">@video.Title</h5>
+            </a>
+            <p class="card-text">@video.Description</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Uploaded by: @video.User.UserName</li>
+            <li class="list-group-item">Uploaded at: @video.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</li>
+        </ul>
+    </div>
+}
+
+<nav>
+  <ul class="pagination">
+    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+        <a class="page-link"
+            class=""
+            asp-action="Index"
+            asp-route-pageNumber="@(Model.PageNumber - 1)"
+        >Previous</a>
+    </li>
+    @for (int i = 1; i <= totalPages; i++) {
+        <li class="page-item">
+            <a class="page-link"
+                asp-route-pageNumber="@i"
+            >@i</a>
+        </li>
+    }
+    <li class="page-item @(Model.PageNumber == totalPages ? "disabled" : "")">
+        <a class="page-link"
+            asp-action="Index"
+            asp-route-pageNumber="@(Model.PageNumber + 1)"
+        >Next</a>
+    </li>
+  </ul>
+</nav>
