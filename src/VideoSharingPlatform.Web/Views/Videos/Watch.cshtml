@@ -1,0 +1,16 @@
+@using VideoSharingPlatform.Core.Entities.VideoAggregate
+@model Video
+
+<div class="container mt-4">
+    <h2>@Model.Title</h2>
+    <p>@Model.Description</p>
+
+    <div class="embed-responsive embed-responsive-16by9">
+        <video class="embed-responsive-item" controls src="@("/videos/" + Model.Id + Model.VideoExt)"></video>
+    </div>
+
+    <ul class="list-group mt-3">
+        <li class="list-group-item">Uploaded by: @Model.User.UserName</li>
+        <li class="list-group-item">Uploaded at: @Model.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</li>
+    </ul>
+</div>

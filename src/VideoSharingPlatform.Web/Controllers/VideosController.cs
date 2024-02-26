@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
+using VideoSharingPlatform.Application.Features.Queries.GetVideoById;
 using VideoSharingPlatform.Application.Features.Queries.GetVideos;
 using VideoSharingPlatform.Application.Features.Queries.GetVideosCount;
 using VideoSharingPlatform.Core.Interfaces;
@@ -30,8 +31,14 @@ public class VideosController : Controller {
     }
 
     [HttpGet("watch/{id}")]
-    public IActionResult Watch(string id) {
-        return View();
+    public async Task<IActionResult> Watch(string id) {
+        var result = await _mediator.Send(new GetVideoByIdQuery(id));
+
+        if (!result.IsSuccess) {
+            return NotFound();
+        }
+
+        return View(result.Value);
     }
 
     [HttpGet("create")]
