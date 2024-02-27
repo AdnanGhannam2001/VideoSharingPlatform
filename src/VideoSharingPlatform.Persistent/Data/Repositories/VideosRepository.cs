@@ -44,4 +44,22 @@ public class VideosRepository : EfRepository<Video>
 
         return Task.FromResult(result);
     }
+
+    public Task<List<Comment>> GetCommentsAsync(string id) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .Include(x => x.Comments)
+            .SelectMany(x => x.Comments)
+            .Include(x => x.User)
+            .Take(10)
+            .ToListAsync();
+    }
+
+    public async Task<int?> GetCommentsCountAsync(string id) {
+        var video = await GetQueryable()
+            .Include(x => x.Comments)
+            .FirstOrDefaultAsync(x => x.Id.Equals(id));
+
+        return video?.Comments.Count;
+    }
 }
