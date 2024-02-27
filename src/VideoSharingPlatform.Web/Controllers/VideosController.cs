@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
+using VideoSharingPlatform.Application.Features.Queries.GetComments;
+using VideoSharingPlatform.Application.Features.Queries.GetCommentsCount;
 using VideoSharingPlatform.Application.Features.Queries.GetVideoById;
 using VideoSharingPlatform.Application.Features.Queries.GetVideos;
 using VideoSharingPlatform.Application.Features.Queries.GetVideosCount;
@@ -33,12 +35,13 @@ public class VideosController : Controller {
     [HttpGet("watch/{id}")]
     public async Task<IActionResult> Watch(string id) {
         var result = await _mediator.Send(new GetVideoByIdQuery(id));
+        var commentsCount = await _mediator.Send(new GetCommentsCountQuery(id));
 
-        if (!result.IsSuccess) {
+        if (!result.IsSuccess || !commentsCount.IsSuccess) {
             return NotFound();
         }
 
-        return View(result.Value);
+        return View(new VideoResponse(result.Value!, commentsCount.Value));
     }
 
     [HttpGet("create")]
@@ -69,5 +72,13 @@ public class VideosController : Controller {
         await _uploadService.UploadImageAsync(dto.Thumbnail, result.Value!.Id);
 
         return RedirectToAction(nameof(HomeController.Index), "home");
+    }
+    
+    [HttpGet("comments/{id}")]
+    public async Task<IActionResult> Comments(string id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
+        var comments = await _mediator.Send(new GetCommentsQuery(id));
+        var count = await _mediator.Send(new GetCommentsCountQuery(id));
+
+        return View(new CommentsResponse(id, comments.Value!, pageNumber, pageSize, count.Value));
     }
 }
