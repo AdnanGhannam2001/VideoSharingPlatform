@@ -11,10 +11,14 @@ public class GetCommentsCountHandler : IRequestHandler<GetCommentsCountQuery, Re
     public GetCommentsCountHandler(VideosRepository repo) { _repo = repo; }
 
     public async Task<Result<int, IEnumerable<Error>>> Handle(GetCommentsCountQuery request, CancellationToken cancellationToken) {
-        var result = await _repo.GetCommentsCountAsync(request.Id);
+        var video = await _repo.GetByIdAsync(request.VideoId, cancellationToken);
 
-        return result is not null
-            ? new((int)result)
-            : new([new("NotFound", "Video is not found")]);
+        if (video is null) {
+            return new([new Error("NotFound", "Video is not found")]);
+        }
+
+        var result = await _repo.GetCommentsCountAsync(request.VideoId, cancellationToken);
+
+        return new(result);
     }
 }

@@ -12,7 +12,13 @@ public class GetCommentsHandler : IRequestHandler<GetCommentsQuery, Result<IEnum
     public GetCommentsHandler(VideosRepository repo) { _repo = repo; }
 
     public async Task<Result<IEnumerable<Comment>, IEnumerable<Error>>> Handle(GetCommentsQuery request, CancellationToken cancellationToken) {
-        var comments = await _repo.GetCommentsAsync(request.VideoId);
+        var video = await _repo.GetByIdAsync(request.VideoId, cancellationToken);
+
+        if (video is null) {
+            return new([new Error("NotFound", "Video is not found")]);
+        }
+
+        var comments = await _repo.GetCommentsAsync(request.VideoId, cancellationToken);
 
         return new(comments);
     }

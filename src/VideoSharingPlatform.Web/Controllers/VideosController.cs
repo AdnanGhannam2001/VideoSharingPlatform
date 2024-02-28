@@ -2,7 +2,6 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using VideoSharingPlatform.Application.Features.Commands.AddComment;
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
 using VideoSharingPlatform.Application.Features.Queries.GetComments;
@@ -72,15 +71,20 @@ public class VideosController : Controller {
             : RedirectToAction(nameof(HomeController.Index), "home");
     }
 
-    [HttpGet("comments/{id}")]
+    [HttpGet("{id}/comments")]
     public async Task<IActionResult> Comments(string id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
-        var comments = await _mediator.Send(new GetCommentsQuery(id));
-        var count = await _mediator.Send(new GetCommentsCountQuery(id));
+        var commentsResult = await _mediator.Send(new GetCommentsQuery(id));
+        var countResult = await _mediator.Send(new GetCommentsCountQuery(id));
 
-        return View(new CommentsResponse(id, comments.Value!, pageNumber, pageSize, count.Value));
+        if (!commentsResult.IsSuccess || !countResult.IsSuccess) {
+            // TODO fix this
+            return NotFound();
+        }
+
+        return View(new CommentsResponse(id, commentsResult.Value!, pageNumber, pageSize, countResult.Value));
     }
 
-    [HttpPost("add-comment/{id}")]
+    [HttpPost("{id}/add-comment")]
     [Authorize]
     public async Task<IActionResult> AddComment(string id, [FromForm] string content) {
         var result = await _mediator.Send(new AddCommentCommand(

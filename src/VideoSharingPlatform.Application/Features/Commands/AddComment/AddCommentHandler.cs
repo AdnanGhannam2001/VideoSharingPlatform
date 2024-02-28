@@ -18,9 +18,9 @@ public class AddCommentHandler : IRequestHandler<AddCommentCommand, Result<Comme
     }
 
     public async Task<Result<Comment, IEnumerable<Error>>> Handle(AddCommentCommand request, CancellationToken cancellationToken) {
-        var videoResult = await _mediator.Send(new GetVideoByIdQuery(request.VideoId));
+        var video = await _repo.GetByIdAsync(request.VideoId, cancellationToken);
 
-        if (!videoResult.IsSuccess) {
+        if (video is null) {
             return new([new ("NotFound", "Video is not found")]);
         }
 
@@ -30,9 +30,9 @@ public class AddCommentHandler : IRequestHandler<AddCommentCommand, Result<Comme
             return new([new ("NotFound", "User is not found")]);
         }
 
-        var comment = new Comment(videoResult.Value!, userResult.Value!, request.Content);
+        var comment = new Comment(video, userResult.Value!, request.Content);
          
-        videoResult.Value!.AddComment(comment);
+        video.AddComment(comment);
 
         await _repo.SaveChangesAsync(cancellationToken);
 

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 
 namespace VideoSharingPlatform.Persistent.Data.Repositories;
@@ -45,21 +44,19 @@ public class VideosRepository : EfRepository<Video>
         return Task.FromResult(result);
     }
 
-    public Task<List<Comment>> GetCommentsAsync(string id) {
+    public Task<List<Comment>> GetCommentsAsync(string id, CancellationToken cancellationToken = default) {
         return GetQueryable()
             .Where(x => x.Id.Equals(id))
-            .Include(x => x.Comments)
             .SelectMany(x => x.Comments)
             .Include(x => x.User)
             .Take(10)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<int?> GetCommentsCountAsync(string id) {
-        var video = await GetQueryable()
-            .Include(x => x.Comments)
-            .FirstOrDefaultAsync(x => x.Id.Equals(id));
-
-        return video?.Comments.Count;
+    public Task<int> GetCommentsCountAsync(string id, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .SelectMany(x => x.Comments)
+            .CountAsync(cancellationToken);
     }
 }
