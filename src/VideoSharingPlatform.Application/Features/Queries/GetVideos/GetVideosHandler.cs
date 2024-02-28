@@ -13,7 +13,7 @@ public class GetVideosHandler : IRequestHandler<GetVideosQuery, Result<IEnumerab
     public GetVideosHandler(VideosRepository repo) { _repo = repo; }
 
     public async Task<Result<IEnumerable<Video>, IEnumerable<Error>>> Handle(GetVideosQuery request, CancellationToken cancellationToken) {
-        var video = await _repo.GetPageAsync(request.PageNumber,
+        var video = await _repo.GetPageWithUserAsync(request.PageNumber,
             request.PageSize,
             x => x.CreatedAtUtc,
             true,

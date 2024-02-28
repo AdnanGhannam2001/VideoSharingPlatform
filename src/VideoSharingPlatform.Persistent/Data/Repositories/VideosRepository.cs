@@ -14,7 +14,7 @@ public class VideosRepository : EfRepository<Video>
             .FirstOrDefaultAsync(x => x.Id.Equals(id));
     }
 
-    public override Task<List<Video>> GetPageAsync<TKey>(int pageNumber,
+    public Task<List<Video>> GetPageWithUserAsync<TKey>(int pageNumber,
         int pageSize,
         Func<Video, TKey>? keySelector = null,
         bool desc = false,
