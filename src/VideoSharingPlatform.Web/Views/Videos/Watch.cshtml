@@ -6,7 +6,8 @@
 }
 
 <div class="container mt-4">
-    <h2>video.Title</h2>
+    <a asp-action="Index">Back to Videos</a>
+    <h2>@video.Title</h2>
 
     <div class="embed-responsive embed-responsive-16by9">
         <video class="embed-responsive-item" controls src="@("/videos/" + video.Id + video.VideoExt)"></video>

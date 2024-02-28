@@ -2,6 +2,8 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using VideoSharingPlatform.Application.Features.Commands.AddComment;
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
 using VideoSharingPlatform.Application.Features.Queries.GetComments;
 using VideoSharingPlatform.Application.Features.Queries.GetCommentsCount;
@@ -80,5 +82,21 @@ public class VideosController : Controller {
         var count = await _mediator.Send(new GetCommentsCountQuery(id));
 
         return View(new CommentsResponse(id, comments.Value!, pageNumber, pageSize, count.Value));
+    }
+
+    [HttpPost("add-comment/{id}")]
+    [Authorize]
+    public async Task<IActionResult> AddComment(string id, [FromForm] string content) {
+        var result = await _mediator.Send(new AddCommentCommand(
+            id,
+            HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value,
+            content));
+
+        if (!result.IsSuccess) {
+            // TODO fix this
+            return BadRequest();
+        }
+
+        return RedirectToAction(nameof(Comments), new { id });
     }
 }

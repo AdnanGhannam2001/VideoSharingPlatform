@@ -3,16 +3,21 @@
 
 @{ var totalPages = (int)Math.Ceiling(Model.Count / (double)Model.PageSize); }
 
-<h1>Comments</h1>
+<a asp-action="Watch" asp-route-id="@Model.VideoId">Back to Video</a>
+<h1>Comments </h1>
 
 <form method="post" asp-controller="Videos" asp-action="AddComment" asp-route-id="@Model.VideoId" class="input-group">
-    <input type="text" class="form-control" placeholder="Enter something">
+    <input type="text" class="form-control" placeholder="Enter something" name="content">
     <div class="input-group-append">
         <button class="btn btn-primary" type="submit">Add Comment</button>
     </div>
 </form>
 
 <hr>
+
+@if (Model.Comments.Count() == 0) {
+    <strong>No Comments Yet</strong>
+}
 
 @foreach (var comment in Model.Comments) {
     <div class="card mb-3">
