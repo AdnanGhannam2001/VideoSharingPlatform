@@ -41,4 +41,6 @@ public sealed class Video : AggregateRoot {
 
     public IReadOnlyCollection<Reaction> Reactions => _reactions.AsReadOnly();
     public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
+
+    public void AddComment(Comment comment) => _comments.Add(comment);
 }
