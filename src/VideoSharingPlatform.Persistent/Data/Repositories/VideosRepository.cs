@@ -49,7 +49,16 @@ public class VideosRepository : EfRepository<Video>
             .Where(x => x.Id.Equals(id))
             .SelectMany(x => x.Comments)
             .Include(x => x.User)
-            .Take(10)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Comment>> GetCommentsPageAsync(string id, int pageNumber, int pageSize, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .SelectMany(x => x.Comments)
+            .Include(x => x.User)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
     }
 

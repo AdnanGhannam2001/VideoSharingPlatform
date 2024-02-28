@@ -73,7 +73,7 @@ public class VideosController : Controller {
 
     [HttpGet("{id}/comments")]
     public async Task<IActionResult> Comments(string id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
-        var commentsResult = await _mediator.Send(new GetCommentsQuery(id));
+        var commentsResult = await _mediator.Send(new GetCommentsQuery(id, pageNumber, pageSize));
         var countResult = await _mediator.Send(new GetCommentsCountQuery(id));
 
         if (!commentsResult.IsSuccess || !countResult.IsSuccess) {

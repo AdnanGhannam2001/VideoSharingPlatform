@@ -18,7 +18,7 @@ public class GetCommentsHandler : IRequestHandler<GetCommentsQuery, Result<IEnum
             return new([new Error("NotFound", "Video is not found")]);
         }
 
-        var comments = await _repo.GetCommentsAsync(request.VideoId, cancellationToken);
+        var comments = await _repo.GetCommentsPageAsync(request.VideoId, request.PageNumber, request.PageSize, cancellationToken);
 
         return new(comments);
     }
