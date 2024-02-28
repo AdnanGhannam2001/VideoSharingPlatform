@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+
 using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Persistent.Data;
@@ -13,6 +15,9 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
     public EfRepository(ApplicationDbContext context) => _context = context;
 
     protected IQueryable<T> GetQueryable() => _context.Set<T>();
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        => _context.Database.BeginTransactionAsync(cancellationToken);
 
     public virtual Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
         where TKey : notnull, IComparable => _context.Set<T>().FindAsync(id, cancellationToken).AsTask();

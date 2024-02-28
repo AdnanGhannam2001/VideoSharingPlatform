@@ -8,8 +8,8 @@ using MediatR;
 using VideoSharingPlatform.Application.Behaviors;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using VideoSharingPlatform.Core.Interfaces;
-using VideoSharingPlatform.Web.Services;
 using VideoSharingPlatform.Persistent.Data.Repositories;
+using VideoSharingPlatform.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

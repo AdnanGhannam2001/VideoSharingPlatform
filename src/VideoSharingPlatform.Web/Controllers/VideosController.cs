@@ -63,19 +63,15 @@ public class VideosController : Controller {
             HttpContext.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value,
             dto.Title,
             dto.Description,
-            Path.GetExtension(dto.VideoFile.FileName),
-            Path.GetExtension(dto.Thumbnail.FileName)));
+            Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+            dto.VideoFile,
+            dto.Thumbnail));
 
-        if (!result.IsSuccess) {
-            return View(dto);
-        }
-
-        await _uploadService.UploadVideoAsync(dto.VideoFile, result.Value!.Id);
-        await _uploadService.UploadImageAsync(dto.Thumbnail, result.Value!.Id);
-
-        return RedirectToAction(nameof(HomeController.Index), "home");
+        return !result.IsSuccess
+            ? View(dto)
+            : RedirectToAction(nameof(HomeController.Index), "home");
     }
-    
+
     [HttpGet("comments/{id}")]
     public async Task<IActionResult> Comments(string id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
         var comments = await _mediator.Send(new GetCommentsQuery(id));
