@@ -16,8 +16,8 @@
     <p>video.Description [Comments: @Model.CommentsCount]</p>
 
     <ul class="list-group mt-3">
-        <li class="list-group-item">Uploaded by: video.User.UserName</li>
-        <li class="list-group-item">Uploaded at: video.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</li>
+        <li class="list-group-item">Uploaded by: @video.User.UserName</li>
+        <li class="list-group-item">Uploaded at: @video.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</li>
     </ul>
 
     <div hx-boost="true">

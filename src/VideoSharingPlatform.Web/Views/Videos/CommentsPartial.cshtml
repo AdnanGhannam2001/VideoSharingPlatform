@@ -1,5 +1,9 @@
 @using VideoSharingPlatform.Web.Dtos
+@using Microsoft.AspNetCore.Identity
+@using VideoSharingPlatform.Core.Entities.AppUserAggregate
 @model CommentsResponse
+@inject SignInManager<AppUser> signInManager
+@inject IHttpContextAccessor httpContext
 
 @{ var totalPages = (int)Math.Ceiling(Model.Count / (double)Model.PageSize); }
 
@@ -7,12 +11,14 @@
     <a asp-action="Watch" asp-route-id="@Model.VideoId">Back to Video</a>
     <h1>Comments </h1>
 
-    <form method="post" asp-controller="Videos" asp-action="AddComment" asp-route-id="@Model.VideoId" class="input-group">
-        <input type="text" class="form-control" placeholder="Enter something" name="content">
-        <div class="input-group-append">
-            <button class="btn btn-primary" type="submit">Add Comment</button>
-        </div>
-    </form>
+    @if (httpContext.HttpContext is not null && signInManager.IsSignedIn(httpContext.HttpContext.User)) {
+        <form method="post" asp-controller="Videos" asp-action="AddComment" asp-route-id="@Model.VideoId" class="input-group">
+            <input type="text" class="form-control" placeholder="Enter something" name="content">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Add Comment</button>
+            </div>
+        </form>
+    }
 
     <hr>
 
