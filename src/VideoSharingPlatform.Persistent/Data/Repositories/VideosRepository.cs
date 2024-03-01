@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using Microsoft.EntityFrameworkCore;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 
@@ -52,6 +54,13 @@ public class VideosRepository : EfRepository<Video>
             .ToListAsync(cancellationToken);
     }
 
+    public Task<Comment?> GetCommentByIdAsync(string videoId, string commentId, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(videoId))
+            .SelectMany(x => x.Comments)
+            .FirstOrDefaultAsync(x => x.Id.Equals(commentId), cancellationToken: cancellationToken);
+    }
+
     public Task<List<Comment>> GetCommentsPageAsync(string id, int pageNumber, int pageSize, CancellationToken cancellationToken = default) {
         return GetQueryable()
             .Where(x => x.Id.Equals(id))
@@ -66,6 +75,46 @@ public class VideosRepository : EfRepository<Video>
         return GetQueryable()
             .Where(x => x.Id.Equals(id))
             .SelectMany(x => x.Comments)
+            .CountAsync(cancellationToken);
+    }
+
+    public Task<Reaction?> GetReactionAsync(string id, string userId, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .SelectMany(x => x.Reactions)
+            .Where(x => x.UserId.Equals(userId))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<Reaction?> GetReactionOnCommentAsync(string videoId, string commentId, string userId, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(videoId))
+            .SelectMany(x => x.Comments)
+            .Where(x => x.Id.Equals(commentId))
+            .SelectMany(x => x.Reactions)
+            .Where(x => x.UserId.Equals(userId))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<int> GetReactionsCountAsync(string id, Expression<Func<Reaction, bool>>? predicate, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .SelectMany(x => x.Reactions)
+            .Where(predicate ?? (x => true))
+            .CountAsync(cancellationToken);
+    }
+
+    public Task<int> GetReactionsOnCommentCountAsync(string videoId,
+        string commentId,
+        Expression<Func<Reaction, bool>>? predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(videoId))
+            .SelectMany(x => x.Comments)
+            .Where(x => x.Id.Equals(commentId))
+            .SelectMany(x => x.Reactions)
+            .Where(predicate ?? (x => true))
             .CountAsync(cancellationToken);
     }
 }

@@ -44,4 +44,6 @@ public sealed class Comment : Entity {
 
     public IReadOnlyCollection<Reaction> Reactions => _reactions.AsReadOnly();
     public IReadOnlyCollection<Comment> Replies => _replies.AsReadOnly();
+
+    public void AddReaction(Reaction reaction) => _reactions.Add(reaction);
 }
