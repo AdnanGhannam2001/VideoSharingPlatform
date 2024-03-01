@@ -20,5 +20,15 @@
         <li class="list-group-item">Uploaded at: video.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</li>
     </ul>
 
-    <a asp-controller="Videos" asp-action="Comments" asp-route-id="@video.Id">View Comments</a>
+    <div hx-boost="true">
+        <a hx-target="#comments"
+            hx-swap="outerHTML"
+            hx-push-url="false"
+            asp-controller="Videos"
+            asp-action="CommentsPartial"
+            asp-route-id="@video.Id"
+        >View Comments</a>
+    </div>
+
+    <div id="comments"></div>
 </div>
