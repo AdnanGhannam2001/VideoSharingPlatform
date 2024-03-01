@@ -13,6 +13,8 @@
         <video class="embed-responsive-item" controls src="@("/videos/" + video.Id + video.VideoExt)"></video>
     </div>
 
+    @(await Html.PartialAsync("ReactPartial", Model.Reaction, new ViewDataDictionary(ViewData){{ "video_id", video.Id }}))
+
     <p>video.Description [Comments: @Model.CommentsCount]</p>
 
     <ul class="list-group mt-3">

@@ -1,0 +1,23 @@
+@using VideoSharingPlatform.Core.Entities.VideoAggregate;
+@using VideoSharingPlatform.Core.Enums;
+@model Reaction?
+
+@{
+    var videoId = Model is not null ? Model.VideoId : ViewData["video_id"];
+    var commentId = Model is not null ? Model.CommentId : ViewData["comment_id"];
+
+    var post = "/videos/" + videoId + (commentId is not null ? "/" + commentId : "") + "/react";
+}
+
+<div id="reaction-box">
+    <button
+        class='btn @(Model?.Type == ReactionType.Like ? "btn-primary" : "btn-outline-primary")'
+        hx-post="@post"
+        hx-target="#reaction-box"
+        hx-swap="outerHTML"
+    >Like</button>
+
+    <button
+        class='btn @(Model?.Type == ReactionType.Dislike ? "btn-danger" : "btn-outline-danger")'
+    >Dislike</button>
+</div>

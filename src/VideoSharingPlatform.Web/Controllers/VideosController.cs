@@ -3,12 +3,16 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VideoSharingPlatform.Application.Features.Commands.AddComment;
+using VideoSharingPlatform.Application.Features.Commands.AddReaction;
 using VideoSharingPlatform.Application.Features.Commands.CreateVideo;
 using VideoSharingPlatform.Application.Features.Queries.GetComments;
 using VideoSharingPlatform.Application.Features.Queries.GetCommentsCount;
+using VideoSharingPlatform.Application.Features.Queries.GetReaction;
 using VideoSharingPlatform.Application.Features.Queries.GetVideoById;
 using VideoSharingPlatform.Application.Features.Queries.GetVideos;
 using VideoSharingPlatform.Application.Features.Queries.GetVideosCount;
+using VideoSharingPlatform.Core.Entities.VideoAggregate;
+using VideoSharingPlatform.Core.Enums;
 using VideoSharingPlatform.Core.Interfaces;
 using VideoSharingPlatform.Web.Dtos;
 
@@ -37,12 +41,19 @@ public class VideosController : Controller {
     public async Task<IActionResult> Watch(string id) {
         var result = await _mediator.Send(new GetVideoByIdQuery(id));
         var commentsCount = await _mediator.Send(new GetCommentsCountQuery(id));
+        Reaction? reaction = null;
+
+        if (HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier) is not null) {
+            var reactionResult = await _mediator.Send(new GetReactionQuery(id, null, HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value));
+
+            reaction = reactionResult.Value;
+        }
 
         if (!result.IsSuccess || !commentsCount.IsSuccess) {
             return NotFound();
         }
 
-        return View(new VideoResponse(result.Value!, commentsCount.Value));
+        return View(new VideoResponse(result.Value!, commentsCount.Value, reaction));
     }
 
     [HttpGet("create")]
@@ -99,5 +110,31 @@ public class VideosController : Controller {
         }
 
         return RedirectToAction(nameof(Watch), new { id });
+    }
+
+    [HttpPost("{id}/react")]
+    [Authorize]
+    public async Task<IActionResult> ReactPartial(string id, ReactionType type) {
+        var result = await _mediator.Send(new AddReactionCommand(id, null,
+            HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value, type));
+
+        if (!result.IsSuccess) {
+            return BadRequest();
+        }
+
+        return PartialView(result.Value);
+    }
+
+    [HttpPost("{videoId}/{commentId}/react")]
+    [Authorize]
+    public async Task<IActionResult> ReactPartial(string videoId, string commentId, ReactionType type) {
+        var result = await _mediator.Send(new AddReactionCommand(videoId, commentId,
+            HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value, type));
+
+        if (!result.IsSuccess) {
+            return BadRequest();
+        }
+
+        return PartialView(result.Value);
     }
 }
