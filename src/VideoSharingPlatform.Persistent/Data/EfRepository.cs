@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
+using VideoSharingPlatform.Core.Common;
+
 using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Persistent.Data;
@@ -19,38 +21,37 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => _context.Database.BeginTransactionAsync(cancellationToken);
 
-    public virtual Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
-        where TKey : notnull, IComparable => _context.Set<T>().FindAsync(id, cancellationToken).AsTask();
+    public virtual async Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
+        where TKey : notnull, IComparable
+            => await _context.Set<T>().FindAsync(id, cancellationToken);
 
-    public virtual Task<List<T>> ListAsync(CancellationToken cancellationToken = default) =>
-        _context.Set<T>().ToListAsync();
+    public virtual Task<List<T>> ListAsync(CancellationToken cancellationToken = default)
+        => _context.Set<T>().ToListAsync(cancellationToken);
 
-    public virtual Task<List<T>> GetPageAsync<TKey>(int pageNumber,
+    public virtual async Task<Page<T>> GetPageAsync<TKey>(int pageNumber,
         int pageSize,
         Func<T, TKey>? keySelector = null,
         bool desc = false,
         CancellationToken cancellationToken = default)
     {
-        List<T> result = keySelector switch {
+        // TODO: Test this for runtime errors
+        var result = keySelector switch
+        {
             not null => desc
-                ? _context.Set<T>()
-                    .OrderByDescending(keySelector)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList()
-                : _context.Set<T>()
-                    .OrderBy(keySelector)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList(),
-            _ => _context.Set<T>()
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList()
+                ? _context.Set<T>().OrderByDescending(keySelector).AsQueryable()
+                : _context.Set<T>().OrderBy(keySelector).AsQueryable(),
+            _ => _context.Set<T>().AsQueryable()
         };
 
-        return Task.FromResult(result);
-    } 
+        var items = await result.Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken);
+
+        // TODO: Update this when you add a filter
+        var total = await CountAsync(cancellationToken);
+
+        return new (items, total);
+    }
 
     public virtual Task<int> CountAsync(CancellationToken cancellationToken = default) => 
         _context.Set<T>().AsNoTracking().CountAsync(cancellationToken);

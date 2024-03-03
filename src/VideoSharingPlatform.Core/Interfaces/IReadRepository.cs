@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 
+using VideoSharingPlatform.Core.Common;
+
 namespace VideoSharingPlatform.Core.Interfaces;
 
 public interface IReadRepository<T>
@@ -9,7 +11,8 @@ public interface IReadRepository<T>
 
     Task<List<T>> ListAsync(CancellationToken cancellationToken = default);
 
-    Task<List<T>> GetPageAsync<TKey>(int pageNumber,
+    // TODO: Add Filter
+    Task<Page<T>> GetPageAsync<TKey>(int pageNumber,
         int pageSize,
         Func<T, TKey>? keySelector = null,
         bool desc = false,

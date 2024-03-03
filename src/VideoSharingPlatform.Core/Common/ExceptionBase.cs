@@ -1,6 +1,5 @@
 namespace VideoSharingPlatform.Core.Common;
 
-// TODO: Remove this class
 public class ExceptionBase : Exception
 {
     public ExceptionBase(string propertyName, string errorMessage, string? errorCode = null) {
