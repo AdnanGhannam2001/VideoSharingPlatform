@@ -30,15 +30,17 @@ public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Rea
             return new([new("NotFound", "Video is not found")]);
         }
 
-        Reaction reaction;
+        Reaction? reaction = new(video, user, request.Type);
 
         if (request.CommentId is null) {
-            if (await _repo.GetReactionsCountAsync(request.VideoId, x => x.UserId == request.UserId, cancellationToken) > 0) {
-                return new([new("AlreadyExists", "You've alrealy reacted to this video")]);
-            }
+            reaction = await _repo.GetReactionAsync(video.Id, user.Id, cancellationToken);
 
-            reaction = new(video, user, request.Type);
-            video.AddReaction(reaction);
+            if (reaction is not null) {
+                reaction.ChangeType(request.Type);
+            } else {
+                reaction = new(video, user, request.Type);
+                video.AddReaction(reaction);
+            }
         }
         else {
             var comment = await _repo.GetCommentByIdAsync(request.VideoId, request.CommentId, cancellationToken);
@@ -47,14 +49,14 @@ public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Rea
                 return new([new("NotFound", "Comment is not found")]);
             }
 
-            if (await _repo.GetReactionsOnCommentCountAsync(request.VideoId,
-                request.CommentId, x => x.UserId == request.UserId, cancellationToken) > 0)
-            {
-                return new([new("AlreadyExists", "You've alrealy reacted to this comment")]);
-            }
+            reaction = await _repo.GetReactionOnCommentAsync(video.Id, comment.Id, user.Id, cancellationToken);
 
-            reaction = new(video, user, request.Type);
-            comment.AddReaction(reaction);
+            if (reaction is not null) {
+                reaction.ChangeType(request.Type);
+            } else {
+                reaction = new(video, user, request.Type);
+                comment.AddReaction(reaction);
+            }
         }
 
         await _repo.SaveChangesAsync(cancellationToken);
