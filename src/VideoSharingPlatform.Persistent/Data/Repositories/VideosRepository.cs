@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-
 using Microsoft.EntityFrameworkCore;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
-using VideoSharingPlatform.Core.Enums;
 
 namespace VideoSharingPlatform.Persistent.Data.Repositories;
 
