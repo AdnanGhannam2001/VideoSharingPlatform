@@ -1,7 +1,7 @@
 namespace VideoSharingPlatform.Core.Common;
 
 public class Result<V, E> : IEquatable<Result<V, E>>
-    where E : Exception
+    where E : ExceptionBase
 {
     public V? Value { get; init; }
     public E[]? Exceptions { get; init; }
