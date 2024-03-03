@@ -114,13 +114,9 @@ public class VideosController : Controller {
 
     [HttpPost("{id}/react")]
     [Authorize]
-    public async Task<IActionResult> ReactPartial(string id, ReactionType type) {
+    public async Task<IActionResult> ReactPartial(string id, [FromQuery] ReactionType type) {
         var result = await _mediator.Send(new AddReactionCommand(id, null,
             HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value, type));
-
-        if (!result.IsSuccess) {
-            return BadRequest();
-        }
 
         return PartialView(result.Value);
     }
@@ -130,10 +126,6 @@ public class VideosController : Controller {
     public async Task<IActionResult> ReactPartial(string videoId, string commentId, ReactionType type) {
         var result = await _mediator.Send(new AddReactionCommand(videoId, commentId,
             HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value, type));
-
-        if (!result.IsSuccess) {
-            return BadRequest();
-        }
 
         return PartialView(result.Value);
     }
