@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using Microsoft.EntityFrameworkCore;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
+using VideoSharingPlatform.Core.Enums;
 
 namespace VideoSharingPlatform.Persistent.Data.Repositories;
 
@@ -116,5 +117,13 @@ public class VideosRepository : EfRepository<Video>
             .SelectMany(x => x.Reactions)
             .Where(predicate ?? (x => true))
             .CountAsync(cancellationToken);
+    }
+
+    public Task<int> DeleteReactionAsync(string id, string userId, CancellationToken cancellationToken = default) {
+        return GetQueryable()
+            .Where(x => x.Id.Equals(id))
+            .SelectMany(x => x.Reactions)
+            .Where(x => x.UserId.Equals(userId))
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }

@@ -34,4 +34,8 @@ public sealed class Reaction {
 
     public string UserId { get; init; }
     public AppUser User { get; init; }
+
+    public void ChangeType(ReactionType type) {
+        Type = type;
+    }
 }
