@@ -29,7 +29,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, Result<AppUs
                     .ToArray());
         }
         catch (DbUpdateException exception) {
-            return new (exception.AsError());
+            return new (exception.AsExceptionBase());
         }
     }
 }

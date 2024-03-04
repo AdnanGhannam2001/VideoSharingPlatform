@@ -28,14 +28,17 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
 
         if (!result.IsValid) {
             var successType = typeof(TResponse).GetGenericArguments()[0];
-            var errorType = typeof(IEnumerable<Error>);
+            var errorType = typeof(ExceptionBase);
             var resultType = typeof(Result<,>).MakeGenericType(successType, errorType);
 
-            var resultObject = Activator.CreateInstance(resultType, [result.Errors.Select(x => x.MapToError())]);
+            var resultObject = Activator.CreateInstance(resultType,
+                result.Errors
+                    .Select(x => x.MapToExceptionBase())
+                    .ToArray());
 
-            if (resultObject is not null) return (TResponse) resultObject;
-
-            throw new Exception("Failed to Create an Instance of Result<,>");
+            return resultObject is not null
+                ? (TResponse) resultObject
+                : throw new Exception("Failed to Create an Instance of Result<,>");
         }
 
         return await next();

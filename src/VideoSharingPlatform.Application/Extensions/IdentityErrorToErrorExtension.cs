@@ -7,11 +7,13 @@ using VideoSharingPlatform.Core.Common;
 namespace VideoSharingPlatform.Application.Extensions;
 
 public static class IdentityErrorToErrorExtension {
-    public static Error MapToError(this IdentityError identityError)
+    public static ExceptionBase MapToExceptionBase(this IdentityError identityError)
         => new("IdentityError",
             identityError.Description,
             identityError.Code);
 
-    public static IEnumerable<Error> MapToErrors(this IEnumerable<IdentityError> identityErrors)
-        => identityErrors.Select(error => error.MapToError());
+    public static ExceptionBase[] MapToExceptionBaseArray(this IEnumerable<IdentityError> identityErrors)
+        => identityErrors
+            .Select(MapToExceptionBase)
+            .ToArray();
 }

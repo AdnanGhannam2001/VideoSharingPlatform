@@ -31,6 +31,6 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, Result<AppUs
 
         return result.Succeeded
             ? new (userResult.Value!)
-            : new (result.Errors.MapToErrors());
+            : new (result.Errors.MapToExceptionBaseArray());
     }
 }
