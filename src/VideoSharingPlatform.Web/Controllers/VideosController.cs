@@ -26,7 +26,7 @@ public class VideosController : Controller {
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
+    public async Task<IActionResult> Index([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5) {
         var videos = await _mediator.Send(new GetVideosQuery(pageNumber, pageSize));
         var count = await _mediator.Send(new GetVideosCountQuery());
 
@@ -42,7 +42,7 @@ public class VideosController : Controller {
         if (HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier) is not null) {
             var reactionResult = await _mediator.Send(new GetReactionQuery(id, null, HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value));
 
-            reaction = reactionResult.Value;
+            reaction = reactionResult.IsSuccess ? reactionResult.Value : null;
         }
 
         if (!result.IsSuccess || !commentsCount.IsSuccess) {
