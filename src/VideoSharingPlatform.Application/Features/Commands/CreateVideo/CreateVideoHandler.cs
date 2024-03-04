@@ -7,7 +7,7 @@ using VideoSharingPlatform.Core.Interfaces;
 
 namespace VideoSharingPlatform.Application.Features.Commands.CreateVideo;
 
-public class CreateVideoHandler : IRequestHandler<CreateVideoCommand, Result<Video, IEnumerable<Error>>> {
+public class CreateVideoHandler : IRequestHandler<CreateVideoCommand, Result<Video, ExceptionBase>> {
     private readonly IMediator _mediator;
     private readonly IRepository<Video> _repo;
     private readonly IUploadService<IFormFile> _uploadService;
@@ -18,11 +18,11 @@ public class CreateVideoHandler : IRequestHandler<CreateVideoCommand, Result<Vid
         _uploadService = uploadService;
     }
 
-    public async Task<Result<Video, IEnumerable<Error>>> Handle(CreateVideoCommand request, CancellationToken cancellationToken) {
+    public async Task<Result<Video, ExceptionBase>> Handle(CreateVideoCommand request, CancellationToken cancellationToken) {
         var user = await _mediator.Send(new GetUserQuery(request.UserId), cancellationToken);
 
         if (!user.IsSuccess) {
-            return new(user.Error!);
+            return new (user.Exceptions!);
         }
 
         var video = new Video(user.Value!,
@@ -46,6 +46,6 @@ public class CreateVideoHandler : IRequestHandler<CreateVideoCommand, Result<Vid
             await transation.RollbackAsync(cancellationToken);
         }
 
-        return new(video);
+        return new (video);
     }
 }

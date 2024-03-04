@@ -8,7 +8,7 @@ using VideoSharingPlatform.Persistent.Data.Repositories;
 
 namespace VideoSharingPlatform.Application.Features.Commands.AddReact;
 
-public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Reaction, IEnumerable<Error>>> {
+public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Reaction, ExceptionBase>> {
     private readonly VideosRepository _repo;
     private readonly UserManager<AppUser> _userManager;
 
@@ -17,23 +17,25 @@ public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Rea
         _userManager = userManager;
     }
 
-    public async Task<Result<Reaction, IEnumerable<Error>>> Handle(AddReactionCommand request, CancellationToken cancellationToken) {
+    public async Task<Result<Reaction, ExceptionBase>> Handle(AddReactionCommand request, CancellationToken cancellationToken) {
         var user = await _userManager.FindByIdAsync(request.UserId);
 
         if (user is null) {
-            return new([new("NotFound", "User is not found")]);
+            return new (new ExceptionBase("NotFound", "User is not found"));
         }
         
-        var video = await _repo.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = request.CommentId is null
+            ? await _repo.GetWithReactionAsync(request.VideoId, user.Id, cancellationToken)
+            : await _repo.GetCommentWithReactionAsync(request.VideoId, request.CommentId, user.Id, cancellationToken);
 
         if (video is null) {
-            return new([new("NotFound", "Video is not found")]);
+            return new (new ExceptionBase("NotFound", "Video is not found"));
         }
 
-        Reaction? reaction = new(video, user, request.Type);
+        Reaction? reaction;
 
         if (request.CommentId is null) {
-            reaction = await _repo.GetReactionAsync(video.Id, user.Id, cancellationToken);
+            reaction = video.Reactions.FirstOrDefault();
 
             if (reaction is not null) {
                 reaction.ChangeType(request.Type);
@@ -43,13 +45,13 @@ public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Rea
             }
         }
         else {
-            var comment = await _repo.GetCommentByIdAsync(request.VideoId, request.CommentId, cancellationToken);
+            var comment = video.Comments.FirstOrDefault();
 
             if (comment is null) {
-                return new([new("NotFound", "Comment is not found")]);
+                return new (new ExceptionBase("NotFound", "Comment is not found"));
             }
 
-            reaction = await _repo.GetReactionOnCommentAsync(video.Id, comment.Id, user.Id, cancellationToken);
+            reaction = comment.Reactions.FirstOrDefault();
 
             if (reaction is not null) {
                 reaction.ChangeType(request.Type);
@@ -61,6 +63,6 @@ public class AddReactionHandler : IRequestHandler<AddReactionCommand, Result<Rea
 
         await _repo.SaveChangesAsync(cancellationToken);
 
-        return new(reaction);
+        return new (reaction);
     }
 }
