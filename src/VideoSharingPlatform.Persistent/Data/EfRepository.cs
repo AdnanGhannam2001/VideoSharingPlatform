@@ -34,25 +34,27 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
         bool desc = false,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Test this for runtime errors
-        var result = keySelector switch
-        {
-            not null => desc
-                ? _context.Set<T>().OrderByDescending(keySelector).AsQueryable()
-                : _context.Set<T>().OrderBy(keySelector).AsQueryable(),
-            _ => _context.Set<T>()
-        };
-
-        var items = await result
+        // TODO: Fix this (Ordering)
+        var query = GetQueryable()
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .AsNoTracking();
 
-        // TODO: Update this when you add a filter
         var total = await CountAsync(cancellationToken);
 
-        return new (items, total);
+        if (keySelector is not null) {
+            var items = desc
+                ? query.OrderByDescending(keySelector)
+                : query.OrderBy(keySelector);
+            
+            return new (items.ToList(), total);
+        } else {
+            var items = desc
+                ? query.OrderDescending()
+                : query.Order();
+
+            return new (items.ToList(), total);
+        }
     }
 
     public virtual Task<int> CountAsync(CancellationToken cancellationToken = default) => 

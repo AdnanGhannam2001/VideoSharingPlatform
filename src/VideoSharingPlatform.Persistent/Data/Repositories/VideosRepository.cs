@@ -18,28 +18,32 @@ public class VideosRepository : EfRepository<Video>
 
     public async Task<Page<Video>> GetPageWithUserAsync<TKey>(int pageNumber,
         int pageSize,
-        Func<Video, TKey>? keySelector = null,
+        Expression<Func<Video, TKey>>? keySelector = null,
         bool desc = false,
         CancellationToken cancellationToken = default)
     {
-        var result = keySelector switch
-        {
-            not null => desc
-                ? GetQueryable().OrderByDescending(keySelector).AsQueryable()
-                : GetQueryable().OrderBy(keySelector).AsQueryable(),
-            _ => GetQueryable()
-        };
-
-        var items = await result
+        // TODO: Fix this (Ordering)
+        var query = GetQueryable()
             .Include(x => x.User)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .AsNoTracking();
 
         var total = await CountAsync(cancellationToken);
 
-        return new (items, total);
+        if (keySelector is not null) {
+            var items = desc
+                ? query.OrderByDescending(keySelector)
+                : query.OrderBy(keySelector);
+            
+            return new (items.ToList(), total);
+        } else {
+            var items = desc
+                ? query.OrderDescending()
+                : query.Order();
+
+            return new (items.ToList(), total);
+        }
     }
 
     public async Task<Page<Comment>> GetCommentsAsync(string id,
