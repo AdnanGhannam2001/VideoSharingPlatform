@@ -1,6 +1,9 @@
+using System.Text;
+
 namespace VideoSharingPlatform.Core.Common;
 
 public class Result<V, E> : IEquatable<Result<V, E>>
+    where V : notnull
     where E : ExceptionBase
 {
     private readonly V? _value;
@@ -11,7 +14,7 @@ public class Result<V, E> : IEquatable<Result<V, E>>
             if (_value is null)
                 throw new InvalidOperationException($"Can't access '{nameof(Value)}' when {nameof(IsSuccess)} is false");
 
-            return _value!;
+            return _value;
         }
         init {
             _value = value;
@@ -23,7 +26,7 @@ public class Result<V, E> : IEquatable<Result<V, E>>
             if (_exceptions is null)
                 throw new InvalidOperationException($"Can't access '{nameof(Exceptions)}' when {nameof(IsSuccess)} is true");
 
-            return _exceptions!;
+            return _exceptions;
         }
         init {
             _exceptions = value;
@@ -33,15 +36,22 @@ public class Result<V, E> : IEquatable<Result<V, E>>
     public Result(V value) => Value = value;
     public Result(params E[] exceptions) => Exceptions = exceptions;
 
-    public bool Equals(Result<V, E>? other) => Equals(other);
     public override bool Equals(object? obj) {
-        return obj is not null
-            && obj is Result<V, E> result
-            && ((Value is null && result.Value is null)
-                || (Value is not null && result.Value is not null && Value.Equals(result.Value)))
-            && ((Exceptions is null && result.Exceptions is null)
-                || (Exceptions is not null && result.Exceptions is not null && Exceptions.Equals(result.Exceptions)));
+        if (obj is Result<V, E> result) {
+            bool valueEquality = (_value is null && result._value is null)
+                || (result._value is not null
+                    && _value?.Equals(result._value) == true);
+            bool exceptionsEquality = (_exceptions is null && result._exceptions is null)
+                || (result._exceptions is not null
+                    && _exceptions?.SequenceEqual(result._exceptions) == true);
+
+            return valueEquality && exceptionsEquality;
+        }
+
+        return false;
     }
+
+    public bool Equals(Result<V, E>? other) => other is not null && Equals(other as object);
 
     public static bool operator ==(Result<V, E> a, Result<V, E> b) => a.Equals(b);
     public static bool operator !=(Result<V, E> a, Result<V, E> b) => !a.Equals(b);
@@ -52,9 +62,18 @@ public class Result<V, E> : IEquatable<Result<V, E>>
 
     public override string ToString()
     {
-        // TODO: Change Exceptions.ToString()
-        return Value is not null
-            ? Value.ToString() ?? ""
-            : Exceptions.ToString() ?? "";
+        var builder = new StringBuilder();
+
+        if (IsSuccess) {
+            builder.Append(Value.ToString()).AppendLine();
+        } else {
+            builder.AppendLine("List of Exceptions:");
+
+            foreach (var exception in Exceptions) {
+                builder.Append(exception.ToString()).AppendLine();
+            }
+        }
+
+        return builder.ToString();
     }
 }
