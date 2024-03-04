@@ -1,19 +1,29 @@
+using System.Text;
+
 namespace VideoSharingPlatform.Core.Common;
 
 public class ExceptionBase : Exception
 {
-    public ExceptionBase(string propertyName, string errorMessage, string? errorCode = null) {
+    public ExceptionBase(string propertyName, string errorMessage, string? errorCode = null) : base() {
         PropertyName = propertyName;
         ErrorMessage = errorMessage;
         ErrorCode = errorCode;
     }
 
-    public required string PropertyName { get; init; }
+    public string PropertyName { get; init; }
 
-    public required string ErrorMessage { get; init; }
+    public string ErrorMessage { get; init; }
 
     public string? ErrorCode { get; init; }
 
-    public override string ToString()
-        => $"{PropertyName}: {ErrorMessage}" + (ErrorCode is not null ? $" #{ErrorCode}" : "");
+    public override string ToString() {
+        var builder = new StringBuilder();
+        if (ErrorCode is not null) {
+            builder.AppendLine($"Error Code: {ErrorCode}");
+        }
+        builder.AppendLine($"Property: {PropertyName}");
+        builder.AppendLine($"Error Message: {ErrorMessage}");
+
+        return builder.ToString();
+    }
 }
