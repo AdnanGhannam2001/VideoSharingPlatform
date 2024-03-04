@@ -58,7 +58,7 @@ public class Result<V, E> : IEquatable<Result<V, E>>
 
     public override int GetHashCode() => GetHashCode();
 
-    public bool IsSuccess => Value is not null && Exceptions is null;
+    public bool IsSuccess => _value is not null && _exceptions is null;
 
     public override string ToString()
     {
