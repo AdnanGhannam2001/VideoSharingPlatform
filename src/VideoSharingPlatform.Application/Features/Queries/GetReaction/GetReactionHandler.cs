@@ -1,16 +1,13 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Identity;
-
 using VideoSharingPlatform.Core.Common;
 using VideoSharingPlatform.Core.Entities.AppUserAggregate;
-
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 using VideoSharingPlatform.Persistent.Data.Repositories;
 
 namespace VideoSharingPlatform.Application.Features.Queries.GetReaction;
 
-public record GetReactionHandler : IRequestHandler<GetReactionQuery, Result<Reaction, IEnumerable<Error>>> {
+public record GetReactionHandler : IRequestHandler<GetReactionQuery, Result<Reaction, ExceptionBase>> {
     private readonly VideosRepository _repo;
     private readonly UserManager<AppUser> _userManager;
 
@@ -19,23 +16,33 @@ public record GetReactionHandler : IRequestHandler<GetReactionQuery, Result<Reac
         _userManager = userManager;
     }
 
-    public async Task<Result<Reaction, IEnumerable<Error>>> Handle(GetReactionQuery request, CancellationToken cancellationToken) {
+    public async Task<Result<Reaction, ExceptionBase>> Handle(GetReactionQuery request, CancellationToken cancellationToken) {
         var user = await _userManager.FindByIdAsync(request.UserId);
 
         if (user is null) {
-            return new([new("NotFound", "User is not found")]);
+            return new (new ExceptionBase("NotFound", "User is not found"));
         }
         
-        var video = await _repo.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = request.CommentId is null
+            ? await _repo.GetWithReactionAsync(request.VideoId, user.Id, cancellationToken)
+            : await _repo.GetCommentWithReactionAsync(request.VideoId, request.CommentId, user.Id, cancellationToken);
 
         if (video is null) {
-            return new([new("NotFound", "Video is not found")]);
+            return new (new ExceptionBase("NotFound", "Video is not found"));
         }
 
-        Reaction? reaction = request.CommentId is null
-            ? await _repo.GetReactionAsync(request.VideoId, request.UserId, cancellationToken)
-            : await _repo.GetReactionOnCommentAsync(request.VideoId, request.CommentId, request.UserId, cancellationToken);
+        var comment = video.Comments.FirstOrDefault();
 
-        return reaction is null ? new([new("NotFound", "Reaction is not found")]) : new(reaction);
+        if (comment is null && request.CommentId is not null) {
+            return new (new ExceptionBase("NotFound", "Comment is not found"));
+        }
+
+        var reaction = comment is null
+            ? video.Reactions.FirstOrDefault()
+            : comment.Reactions.FirstOrDefault();
+
+        return reaction is null
+            ? new (new ExceptionBase("NotFound", "Reaction is not found"))
+            : new (reaction);
     }
 }
