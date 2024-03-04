@@ -3,8 +3,32 @@ namespace VideoSharingPlatform.Core.Common;
 public class Result<V, E> : IEquatable<Result<V, E>>
     where E : ExceptionBase
 {
-    public V? Value { get; init; }
-    public E[]? Exceptions { get; init; }
+    private readonly V? _value;
+    private readonly E[]? _exceptions;
+
+    public V Value {
+        get {
+            if (_value is null)
+                throw new InvalidOperationException($"Can't access '{nameof(Value)}' when {nameof(IsSuccess)} is false");
+
+            return _value!;
+        }
+        init {
+            _value = value;
+        }
+    }
+
+    public E[] Exceptions {
+        get {
+            if (_exceptions is null)
+                throw new InvalidOperationException($"Can't access '{nameof(Exceptions)}' when {nameof(IsSuccess)} is true");
+
+            return _exceptions!;
+        }
+        init {
+            _exceptions = value;
+        }
+    }
 
     public Result(V value) => Value = value;
     public Result(params E[] exceptions) => Exceptions = exceptions;
@@ -30,7 +54,7 @@ public class Result<V, E> : IEquatable<Result<V, E>>
     {
         // TODO: Change Exceptions.ToString()
         return Value is not null
-            ? Value?.ToString() ?? ""
-            : Exceptions?.ToString() ?? "";
+            ? Value.ToString() ?? ""
+            : Exceptions.ToString() ?? "";
     }
 }
