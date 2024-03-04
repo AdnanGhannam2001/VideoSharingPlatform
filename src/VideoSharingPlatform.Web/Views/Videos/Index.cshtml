@@ -3,7 +3,7 @@
 
 @{ var totalPages = (int)Math.Ceiling(Model.Count / (double)Model.PageSize); }
 
-<h1>Videos</h1>
+<h1>Videos @Model.Videos.Total</h1>
 @foreach (var video in Model.Videos) {
     <div class="card mb-3">
         <img src="@("/thumbnails/" + video.Id + video.ThumbnailExt)" class="card-img-top" alt="Video Thumbnail">

@@ -80,7 +80,6 @@ public class VideosController : Controller {
 
     [HttpGet("{id}/comments")]
     public async Task<IActionResult> CommentsPartial(string id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 2) {
-        System.Console.WriteLine(123);
         var commentsResult = await _mediator.Send(new GetCommentsQuery(id, pageNumber, pageSize));
         var countResult = await _mediator.Send(new GetCommentsCountQuery(id));
 
