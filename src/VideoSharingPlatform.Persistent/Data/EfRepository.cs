@@ -26,7 +26,7 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
             => await _context.Set<T>().FindAsync(id, cancellationToken);
 
     public virtual Task<List<T>> ListAsync(CancellationToken cancellationToken = default)
-        => _context.Set<T>().ToListAsync(cancellationToken);
+        => _context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
 
     public virtual async Task<Page<T>> GetPageAsync<TKey>(int pageNumber,
         int pageSize,
@@ -40,12 +40,14 @@ public class EfRepository<T> : IReadRepository<T>, IRepository<T>
             not null => desc
                 ? _context.Set<T>().OrderByDescending(keySelector).AsQueryable()
                 : _context.Set<T>().OrderBy(keySelector).AsQueryable(),
-            _ => _context.Set<T>().AsQueryable()
+            _ => _context.Set<T>()
         };
 
-        var items = await result.Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync(cancellationToken);
+        var items = await result
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
 
         // TODO: Update this when you add a filter
         var total = await CountAsync(cancellationToken);

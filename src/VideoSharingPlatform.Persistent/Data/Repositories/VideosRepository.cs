@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+
+using VideoSharingPlatform.Core.Common;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 
 namespace VideoSharingPlatform.Persistent.Data.Repositories;
@@ -14,35 +16,30 @@ public class VideosRepository : EfRepository<Video>
             .FirstOrDefaultAsync(x => x.Id.Equals(id));
     }
 
-    public Task<List<Video>> GetPageWithUserAsync<TKey>(int pageNumber,
+    public async Task<Page<Video>> GetPageWithUserAsync<TKey>(int pageNumber,
         int pageSize,
         Func<Video, TKey>? keySelector = null,
         bool desc = false,
         CancellationToken cancellationToken = default)
     {
-        var queryable = GetQueryable()
-            .Include(x => x.User);
-
-        List<Video> result = keySelector switch {
+        var result = keySelector switch
+        {
             not null => desc
-                ? queryable
-                    .OrderByDescending(keySelector)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList()
-                : queryable
-                    .OrderBy(keySelector)
-                    .OrderByDescending(keySelector)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList(),
-            _ => queryable
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList()
+                ? GetQueryable().OrderByDescending(keySelector).AsQueryable()
+                : GetQueryable().OrderBy(keySelector).AsQueryable(),
+            _ => GetQueryable()
         };
 
-        return Task.FromResult(result);
+        var items = await result
+            .Include(x => x.User)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var total = await CountAsync(cancellationToken);
+
+        return new (items, total);
     }
 
     public Task<List<Comment>> GetCommentsAsync(string id, CancellationToken cancellationToken = default) {
