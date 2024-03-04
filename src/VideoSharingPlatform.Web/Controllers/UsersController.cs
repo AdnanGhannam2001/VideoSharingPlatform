@@ -1,13 +1,9 @@
 using System.Security.Claims;
-
 using MediatR;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 using VideoSharingPlatform.Application.Features.Commands.UpdateUser;
-
 using VideoSharingPlatform.Application.Features.Queries.GetUser;
 using VideoSharingPlatform.Core.Entities.AppUserAggregate;
 using VideoSharingPlatform.Web.Dtos;
@@ -36,7 +32,7 @@ public class UsersController : Controller {
         var result = await _mediator.Send(dto.ToCreateUserCommand());
 
         if (!result.IsSuccess) {
-            ModelState.AddModelErrors(result.Error!);
+            ModelState.AddModelErrors(result.Exceptions);
             return View(dto);
         }
 
@@ -60,11 +56,11 @@ public class UsersController : Controller {
         var result = await _mediator.Send(dto.ToValidateUserPasswordCommand());
 
         if (!result.IsSuccess) {
-            ModelState.AddModelErrors(result.Error!);
+            ModelState.AddModelErrors(result.Exceptions);
             return View(dto);
         }
 
-        await signInManager.SignInAsync(result.Value!, true);
+        await signInManager.SignInAsync(result.Value, true);
 
         return RedirectToAction(nameof(HomeController.Index), "Home");
     }

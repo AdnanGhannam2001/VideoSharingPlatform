@@ -13,7 +13,6 @@ using VideoSharingPlatform.Application.Features.Queries.GetVideos;
 using VideoSharingPlatform.Application.Features.Queries.GetVideosCount;
 using VideoSharingPlatform.Core.Entities.VideoAggregate;
 using VideoSharingPlatform.Core.Enums;
-using VideoSharingPlatform.Core.Interfaces;
 using VideoSharingPlatform.Web.Dtos;
 
 namespace VideoSharingPlatform.Web.Controllers;
@@ -21,12 +20,9 @@ namespace VideoSharingPlatform.Web.Controllers;
 [Route("[controller]")]
 public class VideosController : Controller {
     private readonly IMediator _mediator;
-    private readonly IUploadService<IFormFile> _uploadService;
 
-    public VideosController(IMediator mediator, IUploadService<IFormFile> uploadService)
-    {
+    public VideosController(IMediator mediator) {
         _mediator = mediator;
-        _uploadService = uploadService;
     }
 
     [HttpGet]
@@ -34,7 +30,7 @@ public class VideosController : Controller {
         var videos = await _mediator.Send(new GetVideosQuery(pageNumber, pageSize));
         var count = await _mediator.Send(new GetVideosCountQuery());
 
-        return View(new VideosResponse(videos.Value!, pageNumber, pageSize, count.Value));
+        return View(new VideosResponse(videos.Value, pageNumber, pageSize, count.Value));
     }
 
     [HttpGet("watch/{id}")]
@@ -53,7 +49,7 @@ public class VideosController : Controller {
             return NotFound();
         }
 
-        return View(new VideoResponse(result.Value!, commentsCount.Value, reaction));
+        return View(new VideoResponse(result.Value, commentsCount.Value, reaction));
     }
 
     [HttpGet("create")]
@@ -93,7 +89,7 @@ public class VideosController : Controller {
             return NotFound();
         }
 
-        return PartialView(new CommentsResponse(id, commentsResult.Value!, pageNumber, pageSize, countResult.Value));
+        return PartialView(new CommentsResponse(id, commentsResult.Value, pageNumber, pageSize, countResult.Value));
     }
 
     [HttpPost("{id}/add-comment")]
